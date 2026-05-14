@@ -38,6 +38,8 @@ color_map = {
 df["farukhnagar_stock"]= df["ACT_B2B"]+ df["RETAIL"]
 df["Free Stock"]= df["L1 FREE STOCK"]
 
+
+
 blocking_cols = ["ONLINE", "RETAIL BLOCKING", "NORTH", "EAST", "WEST", "SOUTH"]
 
 for col in blocking_cols:
@@ -436,6 +438,9 @@ else:
             direct_match = df[df["New SKU Code"] == pattern]
             online_block = 0
             retail_block = 0
+            ACT_B2B=0
+            RETAIL=0
+            bhiwandi_stock = 0
 
             if not direct_match.empty:
                 online_block = pd.to_numeric(
@@ -448,8 +453,26 @@ else:
                     errors="coerce"
                 )
 
+                ACT_B2B = pd.to_numeric(
+                    direct_match.iloc[0].get("ACT_B2B", 0),
+                    errors="coerce"
+                )
+
+                RETAIL= pd.to_numeric(
+                    direct_match.iloc[0].get("RETAIL", 0),
+                    errors="coerce"
+                )
+
+                bhiwandi_stock = pd.to_numeric(
+                    direct_match.iloc[0].get("Bhiwandi_Ratan WH", 0),
+                    errors="coerce"
+                )
+
                 online_block = 0 if pd.isna(online_block) else int(online_block)
                 retail_block = 0 if pd.isna(retail_block) else int(retail_block)
+                ACT_B2B = 0 if pd.isna(ACT_B2B) else int(ACT_B2B)
+                RETAIL=0 if pd.isna(RETAIL) else int(RETAIL)
+                bhiwandi_stock = 0 if pd.isna(bhiwandi_stock) else int(bhiwandi_stock)
 
             if not direct_match.empty:
                 stock = pd.to_numeric(
@@ -550,9 +573,13 @@ else:
 
                 free_stock = 0 if pd.isna(free_stock) else int(free_stock)
 
+
             results.append({
                 "Set SKU": pattern,
                 "Order Qty": qty,
+                "ACT_B2B":ACT_B2B,
+                "Retail Warehouse":RETAIL,
+                "BHIWANDI Warehouse":bhiwandi_stock,
                 "Available Stock": stock,
                 "ONLINE Blocking": online_block,
                 "Retail Blocking": retail_block,
